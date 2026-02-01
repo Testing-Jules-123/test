@@ -10,6 +10,11 @@ func _ready():
 
 func addChild(child):
 	children.append(child)
+	if(child.npcID == null || child.npcID == ""):
+		var ChildGeneratorScript = load("res://Characters/Dynamic/Generator/ChildGenerator.gd")
+		if(ChildGeneratorScript):
+			var childGenerator = ChildGeneratorScript.new()
+			childGenerator.generateForChild(child)
 	
 func getChildren() -> Array:
 	return children

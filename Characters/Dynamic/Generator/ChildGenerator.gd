@@ -1,7 +1,6 @@
-extends CharacterGeneratorBase
-class_name ChildGenerator
+extends "res://Characters/Dynamic/Generator/CharacterGeneratorBase.gd"
 
-func generateForChild(child: Child):
+func generateForChild(child):
 	var mother = GlobalRegistry.getCharacter(child.motherID)
 	var father = GlobalRegistry.getCharacter(child.fatherID)
 
@@ -20,7 +19,8 @@ func generateForChild(child: Child):
 	if (child.motherID == "pc" || child.fatherID == "pc"):
 		character.npcSmallDescription = "One of your children"
 	else:
-		character.npcSmallDescription = "One of " + child.getMotherName() + "'s children"
+		var motherName = mother.getName() if mother != null else child.getMotherName()
+		character.npcSmallDescription = "One of " + motherName + "'s children"
 
 	# Traits inheritance
 	if (mother != null):
@@ -114,7 +114,7 @@ func generateForChild(child: Child):
 
 	character.updateNonBattleEffects()
 
-	child.setNpcID(character.getID())
+	child.npcID = character.getID()
 	if(is_instance_valid(GM.main)):
 		GM.main.addDynamicCharacterToPool(character.getID(), CharacterPool.Inmates)
 
