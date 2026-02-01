@@ -4,17 +4,26 @@ func _init():
 	id = "BirthControlPill"
 
 func getVisibleName():
-	return "Birth Control Pill"
+	return "Plan B Pill"
 	
 func getDescription():
-	return "Alters the hormone balance of your body, significantly reducing pregnancy chance. Take one every 24 hours for the best effect."
+	return "Works by delaying ovulation. Most effective when taken as soon as possible after unprotected sex. Does not work if ovulation has already occurred. Has a success rate of about 90%."
 
 func canUseInCombat():
 	return true
 
 func useInCombat(_attacker, _receiver):
+	if(_receiver.getMenstrualCycle()):
+		var cycleDays = _receiver.getMenstrualCycle().getCycleLength() / (24.0 * 3600.0)
+		var delaySeconds = (cycleDays / 5.0) * 24.0 * 3600.0
+		if(_receiver.getMenstrualCycle().delayOvulation(delaySeconds)):
+			removeXOrDestroy(1)
+			return _attacker.getName() + " took the Plan B pill. Ovulation was delayed."
+		else:
+			removeXOrDestroy(1)
+			return _attacker.getName() + " took the Plan B pill. It seems it was too late or it just didn't work."
 	removeXOrDestroy(1)
-	return _attacker.getName() + " took the pill"
+	return _attacker.getName() + " took the Plan B pill."
 
 func getPossibleActions():
 	return [
@@ -26,7 +35,7 @@ func getPossibleActions():
 	]
 
 func getPrice():
-	return 2
+	return 5
 
 func canSell():
 	return true
@@ -38,24 +47,10 @@ func addsIntoxication():
 	return 0.0
 
 func getTimedBuffs():
-		
-	return [
-		#buff(Buff.ExposureBuff, [100])
-		buff(Buff.FinalFertilityModifierBuff, [-99]),
-		buff(Buff.FinalVirilityModifierBuff, [-99]),
-	]
+	return []
 
 func getBuffsDurationSeconds():
-	return 60*60*24
-
-func getTimedBuffsTurns():
-	return [
-		#buff(Buff.MaxLustBuff, [-20]),
-		#buff(Buff.MaxPainBuff, [20]),
-	]
-
-func getBuffsDurationTurns():
-	return 5
+	return 0
 
 func getTags():
 	return [
@@ -64,26 +59,25 @@ func getTags():
 		]
 
 func getBuyAmount():
-	return 5
+	return 1
 
 func getSexEngineInfo(_sexEngine, _domInfo, _subInfo):
-	#var sub:BaseCharacter = _subInfo.getChar()
-	#var dom:BaseCharacter = _domInfo.getChar()
-	
 	return {
-		"name": "Birth control pill",
-		"usedName": "a birth control pill",
-		"desc": "Makes you mostly sterile for a while.",
-		"scoreOnSub": _domInfo.goalsScoreMax({SexGoal.FuckVaginal: 1.0, SexGoal.FuckAnal: 0.1}, _subInfo.charID)*_domInfo.fetishScore({Fetish.Breeding: -1.0}),
-		"scoreOnSelf": _domInfo.goalsScoreMax({SexGoal.ReceiveVaginal: 1.0, SexGoal.ReceiveAnal: 0.1}, _subInfo.charID)*_domInfo.fetishScore({Fetish.BeingBred: -1.0}),
-		"scoreSubScore": _subInfo.fetishScore({Fetish.BeingBred: -1.0}),
+		"name": "Plan B pill",
+		"usedName": "a Plan B pill",
+		"desc": "Delays ovulation if taken in time.",
+		"scoreOnSub": 0.0, # Sex engine might need more logic here
+		"scoreOnSelf": 0.0,
 		"canUseOnDom": true,
 		"canUseOnSub": true,
 		"maxUsesByNPC": 1,
 	}
 
 func useInSex(_receiver):
-	_receiver.addTimedBuffs(getTimedBuffs(), getBuffsDurationSeconds())
+	if(_receiver.getMenstrualCycle()):
+		var cycleDays = _receiver.getMenstrualCycle().getCycleLength() / (24.0 * 3600.0)
+		var delaySeconds = (cycleDays / 5.0) * 24.0 * 3600.0
+		_receiver.getMenstrualCycle().delayOvulation(delaySeconds)
 
 func getItemCategory():
 	return ItemCategory.Medical

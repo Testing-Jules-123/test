@@ -115,6 +115,11 @@ var upgradesInfo:Dictionary = {
 					"Milk": 200.0,
 				},
 			},
+			"DailyBirthControlPill": {
+				fluids = {
+					"Milk": 150.0,
+				},
+			},
 			"AnaphrodisiacPill": {
 				fluids = {
 					"GirlCum": 200.0,
