@@ -150,6 +150,22 @@ func optimize():
 			_i += 1
 		
 
+func areParentAndChild(id1: String, id2: String) -> bool:
+	if(id1 == "" || id2 == "" || id1 == id2):
+		return false
+	for child in children:
+		var childNpcID = child.getNpcID()
+		if(childNpcID == ""):
+			continue
+
+		if (childNpcID == id1):
+			if (child.getMotherID() == id2 || child.getFatherID() == id2):
+				return true
+		if (childNpcID == id2):
+			if (child.getMotherID() == id1 || child.getFatherID() == id1):
+				return true
+	return false
+
 func getArchiveID(motherID:String, fatherID:String) -> String:
 	return motherID+";"+fatherID
 
