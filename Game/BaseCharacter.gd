@@ -1367,8 +1367,10 @@ func giveBirth() -> Array:
 	
 	clearOrificeFluids()
 	var bornChildren = getMenstrualCycle().giveBirth()
+	var childGenerator = ChildGenerator.new()
 	for child in bornChildren:
 		GM.CS.addChild(child)
+		childGenerator.generateForChild(child)
 	
 	return bornChildren
 
