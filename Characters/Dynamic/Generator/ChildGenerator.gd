@@ -16,11 +16,14 @@ func generateForChild(child):
 	character.npcSpecies = child.species
 
 	# Description
-	if (child.motherID == "pc" || child.fatherID == "pc"):
-		character.npcSmallDescription = "One of your children"
+	var motherName = child.getMotherName()
+	var fatherName = child.getFatherName()
+	if (child.motherID == "pc"):
+		character.npcSmallDescription = "One of your children with " + fatherName
+	elif (child.fatherID == "pc"):
+		character.npcSmallDescription = "One of your children with " + motherName
 	else:
-		var motherName = mother.getName() if mother != null else child.getMotherName()
-		character.npcSmallDescription = "One of " + motherName + "'s children"
+		character.npcSmallDescription = "One of " + motherName + "'s children with " + fatherName
 
 	# Traits inheritance
 	if (mother != null):
@@ -32,9 +35,10 @@ func generateForChild(child):
 
 		# Colors
 		if (father != null):
-			character.pickedSkinRColor = mother.pickedSkinRColor.linear_interpolate(father.pickedSkinRColor, 0.5)
-			character.pickedSkinGColor = mother.pickedSkinGColor.linear_interpolate(father.pickedSkinGColor, 0.5)
-			character.pickedSkinBColor = mother.pickedSkinBColor.linear_interpolate(father.pickedSkinBColor, 0.5)
+			var bias = RNG.randf_range(0.2, 0.8)
+			character.pickedSkinRColor = mother.pickedSkinRColor.linear_interpolate(father.pickedSkinRColor, bias)
+			character.pickedSkinGColor = mother.pickedSkinGColor.linear_interpolate(father.pickedSkinGColor, bias)
+			character.pickedSkinBColor = mother.pickedSkinBColor.linear_interpolate(father.pickedSkinBColor, bias)
 		else:
 			character.pickedSkinRColor = mother.pickedSkinRColor
 			character.pickedSkinGColor = mother.pickedSkinGColor
@@ -117,5 +121,11 @@ func generateForChild(child):
 	child.npcID = character.getID()
 	if(is_instance_valid(GM.main)):
 		GM.main.addDynamicCharacterToPool(character.getID(), CharacterPool.Inmates)
+		if(mother != null):
+			GM.main.RS.setAffection(character.getID(), mother.getID(), 1.0)
+			GM.main.RS.setAffection(mother.getID(), character.getID(), 1.0)
+		if(father != null):
+			GM.main.RS.setAffection(character.getID(), father.getID(), 1.0)
+			GM.main.RS.setAffection(father.getID(), character.getID(), 1.0)
 
 	return character

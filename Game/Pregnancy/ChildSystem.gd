@@ -142,6 +142,8 @@ func optimize():
 				shouldRemove = true
 		
 		if(shouldRemove):
+			if(child.npcID != null && child.npcID != "" && is_instance_valid(GM.main)):
+				GM.main.removeDynamicCharacter(child.npcID)
 			addArchiveChild(motherID, fatherID)
 			children.remove(_i)
 		else:
