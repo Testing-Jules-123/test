@@ -159,6 +159,9 @@ func tryImpregnate(fluidDNA, amountML:float, eggMultiplier:float = 1.0, fertilit
 	virility = max(virility, 0.0)
 	fertility = max(fertility, 0.0)
 	
+	if(GM.CS.areParentAndChild(motherID, fluidDNA.getCharacterID())):
+		fertility *= 0.05
+
 	var finalChance:float = amountML * crossSpeciesMod * 5.0 * eggMultiplier * virility * fertility * OPTIONS.getImpregnationChanceModifier()
 	#print(finalChance)
 	
