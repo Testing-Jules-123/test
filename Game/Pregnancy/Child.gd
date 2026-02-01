@@ -11,6 +11,7 @@ var causerID: String
 var rememberedMotherName: String = "" # Required in case the character gets deleted
 var rememberedFatherName: String = ""
 var uniqueID: int
+var npcID: String = ""
 var bornFromMonozygotic: String = ""
 const EGG_MONOZYGOTIC_LEVEL = {1: "", 2: "Twins", 3: "Triplets", 4: "Quadruplets", 5: "Quintuplets", 6: "Sextuplets"}
 
@@ -54,6 +55,12 @@ func setFatherID(newfather):
 
 func setCauserID(newcauser:String):
 	causerID = newcauser
+
+func setNpcID(newID):
+	npcID = newID
+
+func getNpcID():
+	return npcID
 
 func getMotherID():
 	return motherID
@@ -103,6 +110,7 @@ func saveData():
 		"rememberedMotherName": rememberedMotherName,
 		"rememberedFatherName": rememberedFatherName,
 		"causerID": causerID,
+		"npcID": npcID,
 	}
 	
 	return data
@@ -122,3 +130,4 @@ func loadData(data):
 	rememberedFatherName = SAVE.loadVar(data, "rememberedFatherName", "")
 	if(data.has("causerID")):
 		causerID = SAVE.loadVar(data, "causerID", "")
+	npcID = SAVE.loadVar(data, "npcID", "")
