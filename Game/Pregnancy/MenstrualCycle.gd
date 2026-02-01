@@ -163,7 +163,7 @@ func processTime(seconds):
 				var blocked = false
 				if(theCharacter != null && theCharacter.hasEffect(StatusEffect.DailyBirthControl)):
 					var effect = theCharacter.getEffect(StatusEffect.DailyBirthControl)
-					if(RNG.chance(effect.getEffectiveness() * 100.0)):
+					if(effect != null && RNG.chance(effect.getEffectiveness() * 100.0)):
 						blocked = true
 
 				if(blocked):

@@ -49,6 +49,7 @@ func _run():
 		else:
 			addDisabledButton("Research", "Talk about it with Eliza first")
 		if(getModuleFlag("MedicalModule", "Med_pcKnowsAboutMilking")):
+			addButton("Contraception", "Check out different ways of not getting pregnant", "contraception")
 			addButton("Milking", "See how you can be milked", "milking_menu")
 			
 #			if(GM.pc.hasPerk(Perk.MilkNoSoreNipples) || (!getModuleFlag("MedicalModule", "Med_wasMilkedToday", false) && !GM.pc.hasEffect(StatusEffect.SoreNipplesAfterMilking))):
@@ -286,6 +287,29 @@ func _run():
 		#addDisabledButton("Prototype testing", "Test bleeding-edge hi-tech machines or devices")
 		addButton("Back", "You're not interested", "")
 
+
+	if(state == "contraception"):
+		saynn("[say=pc]Can we talk about contraception?[/say]")
+
+		saynn("Eliza nods and leans on the counter.")
+
+		saynn("[say=eliza]Sure thing. Inmates are free to fuck as much as they want, but if you don't want to end up with a belly full of kids, you should take some precautions.[/say]")
+
+		saynn("[say=eliza]We sell daily birth control pills in the vendomats, they are quite effective if you take them regularly. But if you want something more permanent.. I can offer you an IUD installation.[/say]")
+
+		saynn("[say=pc]An IUD?[/say]")
+
+		saynn("[say=eliza]Intrauterine device. It's a small plastic or copper thingy that I insert into your womb. It's very effective, almost 100%. It stays there until I remove it.[/say]")
+
+		saynn("[say=eliza]It does have a downside, though. It can make your periods quite painful. But hey, it's better than having to remember to take a pill every day, right? Installation costs 50 credits.[/say]")
+
+		if(!GM.pc.hasEffect(StatusEffect.IUD)):
+			addButtonWithChecks("Install IUD", "Pay 50 credits to have an IUD installed. Reduces fertility by 99.99% but causes pain during menstruation.", "install_iud", [], [[ButtonChecks.HasCredits, 50], [ButtonChecks.HasVagina]])
+		else:
+			addDisabledButton("Install IUD", "You already have an IUD installed")
+			addButton("Remove IUD", "Ask Eliza to remove your IUD", "remove_iud")
+
+		addButton("Back", "Go back", "")
 
 	if(state == "milking_menu"):
 		saynn("[say=pc]I’m interested. You were talking about the possibility of donating milk and cum?[/say]")
@@ -633,6 +657,19 @@ func _react(_action: String, _args):
 		runScene("ElizaTFHerScene")
 		return
 	
+	if(_action == "install_iud"):
+		GM.pc.addCredits(-50)
+		GM.pc.addEffect(StatusEffect.IUD)
+		addMessage("IUD was successfully installed")
+		setState("")
+		return
+
+	if(_action == "remove_iud"):
+		GM.pc.removeEffect(StatusEffect.IUD)
+		addMessage("IUD was successfully removed")
+		setState("")
+		return
+
 	setState(_action)
 
 
