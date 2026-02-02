@@ -13,10 +13,14 @@ func canUseInCombat():
 	return true
 
 func useInCombat(_attacker, _receiver):
-	if(_receiver.getMenstrualCycle()):
-		var cycleDays = _receiver.getMenstrualCycle().getCycleLength() / (24.0 * 3600.0)
+	var target = _attacker
+	if(_receiver != null && _receiver.isPlayer()):
+		target = _receiver
+
+	if(target.getMenstrualCycle()):
+		var cycleDays = target.getMenstrualCycle().getCycleLength() / (24.0 * 3600.0)
 		var delaySeconds = (cycleDays / 5.0) * 24.0 * 3600.0
-		if(_receiver.getMenstrualCycle().delayOvulation(delaySeconds)):
+		if(target.getMenstrualCycle().delayOvulation(delaySeconds)):
 			removeXOrDestroy(1)
 			return _attacker.getName() + " took the Plan B pill. Ovulation was delayed."
 		else:
@@ -66,8 +70,9 @@ func getSexEngineInfo(_sexEngine, _domInfo, _subInfo):
 		"name": "Plan B pill",
 		"usedName": "a Plan B pill",
 		"desc": "Delays ovulation if taken in time.",
-		"scoreOnSub": 0.0, # Sex engine might need more logic here
-		"scoreOnSelf": 0.0,
+		"scoreOnSub": _domInfo.goalsScoreMax({SexGoal.FuckVaginal: 1.0, SexGoal.FuckAnal: 0.1}, _subInfo.charID)*_domInfo.fetishScore({Fetish.Breeding: -1.0}),
+		"scoreOnSelf": _domInfo.goalsScoreMax({SexGoal.ReceiveVaginal: 1.0, SexGoal.ReceiveAnal: 0.1}, _subInfo.charID)*_domInfo.fetishScore({Fetish.BeingBred: -1.0}),
+		"scoreSubScore": _subInfo.fetishScore({Fetish.BeingBred: -1.0}),
 		"canUseOnDom": true,
 		"canUseOnSub": true,
 		"maxUsesByNPC": 1,
@@ -77,7 +82,11 @@ func useInSex(_receiver):
 	if(_receiver.getMenstrualCycle()):
 		var cycleDays = _receiver.getMenstrualCycle().getCycleLength() / (24.0 * 3600.0)
 		var delaySeconds = (cycleDays / 5.0) * 24.0 * 3600.0
-		_receiver.getMenstrualCycle().delayOvulation(delaySeconds)
+		if(_receiver.getMenstrualCycle().delayOvulation(delaySeconds)):
+			return {text = "{receiver.name} took the Plan B pill. Ovulation was delayed."}
+		else:
+			return {text = "{receiver.name} took the Plan B pill, but it didn't seem to work."}
+	return {text = "{receiver.name} took the Plan B pill."}
 
 func getItemCategory():
 	return ItemCategory.Medical
