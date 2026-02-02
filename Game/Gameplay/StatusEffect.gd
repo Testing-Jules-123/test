@@ -58,6 +58,8 @@ const CumInflated = "CumInflated"
 const Exposed = "Exposed"
 const SoreNipplesAfterMilking = "SoreNipplesAfterMilking"
 const HasTFs = "HasTFs"
+const DailyBirthControl = "DailyBirthControl"
+const IUD = "IUD"
 
 # Hypnosis effects
 const Suggestible = "Suggestible"

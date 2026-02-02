@@ -10,6 +10,7 @@ var noticedVisiblyPregnant:bool = false
 var noticedHeavyIntoPregnancy:bool = false
 var noticedReadyToGiveBirth:bool = false
 var willOvulateAt: float = 0.5
+var ovulationDelaySeconds: float = 0.0
 signal readyToGiveBirthOnce
 signal visiblyPregnant
 signal heavyIntoPregnancy
@@ -142,15 +143,33 @@ func processTime(seconds):
 	if(!hasAnyWomb()):
 		cycleProgress = 0.0	
 	elif(!isPregnant() || (theCharacter != null && theCharacter.hasPerk(Perk.FertilityBetterOvulationV3))):
-		var add = float(seconds)/float(getCycleLength())
+		if(ovulationDelaySeconds > 0):
+			ovulationDelaySeconds -= seconds
+			if(ovulationDelaySeconds < 0):
+				seconds = -ovulationDelaySeconds
+				ovulationDelaySeconds = 0
+			else:
+				seconds = 0
 		
-		cycleProgress += add
-		while(cycleProgress >= 1.0):
-			cycleProgress -= 1.0
-			newCycle()
-		
-		if(shouldOvulate()):
-			ovulate()
+		if(seconds > 0):
+			var add = float(seconds)/float(getCycleLength())
+
+			cycleProgress += add
+			while(cycleProgress >= 1.0):
+				cycleProgress -= 1.0
+				newCycle()
+
+			if(shouldOvulate()):
+				var blocked = false
+				if(theCharacter != null && theCharacter.hasEffect(StatusEffect.DailyBirthControl)):
+					var effect = theCharacter.getEffect(StatusEffect.DailyBirthControl)
+					if(effect != null && RNG.chance(effect.getEffectiveness() * 100.0)):
+						blocked = true
+
+				if(blocked):
+					ovulatedThisCycle = true
+				else:
+					ovulate()
 	
 	if(impregnatedEggCells.size() > 0):
 		var pregnancySpeed = getPregnancySpeed()
@@ -202,6 +221,15 @@ func forceImpregnateBy(npcID:String):
 	if(howMuchImpregnated <= 0):
 		return false
 	return true
+
+func delayOvulation(seconds: float):
+	if(ovulatedThisCycle || isPregnant()):
+		return false
+
+	if(RNG.chance(90)):
+		ovulationDelaySeconds += seconds
+		return true
+	return false
 
 func ovulate():
 	ovulatedThisCycle = true
@@ -369,6 +397,7 @@ func saveData():
 		"noticedVisiblyPregnant": noticedVisiblyPregnant,
 		"noticedReadyToGiveBirth": noticedReadyToGiveBirth,
 		"noticedHeavyIntoPregnancy": noticedHeavyIntoPregnancy,
+		"ovulationDelaySeconds": ovulationDelaySeconds,
 	}
 	var eggData = []
 	for orificeType in eggCells:
@@ -387,6 +416,7 @@ func loadData(data):
 	noticedVisiblyPregnant = SAVE.loadVar(data, "noticedVisiblyPregnant", false)
 	noticedReadyToGiveBirth = SAVE.loadVar(data, "noticedReadyToGiveBirth", false)
 	noticedHeavyIntoPregnancy = SAVE.loadVar(data, "noticedHeavyIntoPregnancy", false)
+	ovulationDelaySeconds = SAVE.loadVar(data, "ovulationDelaySeconds", 0.0)
 
 	impregnatedEggCells.clear()
 	eggCells.clear()

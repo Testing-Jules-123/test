@@ -157,7 +157,8 @@ func _react(_action: String, _args):
 			["a tube of lube", "lube"],
 			["a single condom", "QualityCondom"],
 			["a restraint key", "restraintkey"],
-			["a birth control pill", "BirthControlPill"],
+			["a Plan B pill", "BirthControlPill"],
+			["daily birth control pills", "DailyBirthControlPill"],
 			["an anaphrodisiac pill", "AnaphrodisiacPill"],
 			["a breeder pill", "BreederPill"],
 			]

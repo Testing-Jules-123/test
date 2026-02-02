@@ -8,6 +8,7 @@ func _init():
 		[100, [["AnaphrodisiacPill", 1, 5]]],
 		[20, [["EnergyDrink", 1, 3]]],
 		[20, [["BirthControlPill", 1, 3]]],
+		[20, [["DailyBirthControlPill", 1, 1]]],
 		[20, [["BreederPill", 1, 3]]],
 		[20, [["HeatPill", 1, 3]]],
 		[20, [["QualityCondom", 1, 5]]],

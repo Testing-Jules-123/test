@@ -317,6 +317,7 @@ func _react(_action: String, _args):
 			var item:ItemBase = GlobalRegistry.createItem(RNG.pick([
 				"AnaphrodisiacPill",
 				"BirthControlPill",
+				"DailyBirthControlPill",
 				"BreederPill",
 				"HeatPill",
 			]))
