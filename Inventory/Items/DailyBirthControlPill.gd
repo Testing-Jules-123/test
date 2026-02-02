@@ -13,8 +13,12 @@ func canUseInCombat():
 	return true
 
 func useInCombat(_attacker, _receiver):
-	_receiver.addEffect(StatusEffect.DailyBirthControl)
-	var effect = _receiver.getEffect(StatusEffect.DailyBirthControl)
+	var target = _attacker
+	if(_receiver != null && _receiver.isPlayer()):
+		target = _receiver
+
+	target.addEffect(StatusEffect.DailyBirthControl)
+	var effect = target.getEffect(StatusEffect.DailyBirthControl)
 	if(effect):
 		effect.takePill()
 	removeXOrDestroy(1)
@@ -55,8 +59,9 @@ func getSexEngineInfo(_sexEngine, _domInfo, _subInfo):
 		"name": "Daily birth control pill",
 		"usedName": "a birth control pill",
 		"desc": "Prevents ovulation when taken regularly.",
-		"scoreOnSub": 0.0,
-		"scoreOnSelf": 0.0,
+		"scoreOnSub": _domInfo.goalsScoreMax({SexGoal.FuckVaginal: 1.0, SexGoal.FuckAnal: 0.1}, _subInfo.charID)*_domInfo.fetishScore({Fetish.Breeding: -1.0}),
+		"scoreOnSelf": _domInfo.goalsScoreMax({SexGoal.ReceiveVaginal: 1.0, SexGoal.ReceiveAnal: 0.1}, _subInfo.charID)*_domInfo.fetishScore({Fetish.BeingBred: -1.0}),
+		"scoreSubScore": _subInfo.fetishScore({Fetish.BeingBred: -1.0}),
 		"canUseOnDom": true,
 		"canUseOnSub": true,
 		"maxUsesByNPC": 1,
@@ -67,6 +72,7 @@ func useInSex(_receiver):
 	var effect = _receiver.getEffect(StatusEffect.DailyBirthControl)
 	if(effect):
 		effect.takePill()
+	return {text = "{receiver.name} took a birth control pill."}
 
 func getItemCategory():
 	return ItemCategory.Medical

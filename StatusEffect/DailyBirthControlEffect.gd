@@ -43,6 +43,9 @@ func processTime(_secondsPassed: int):
 	if(lastDoseTime > 0 && (currentTime - lastDoseTime) > 36 * 3600):
 		daysTaken = 0.0
 
+	if(daysTaken <= 0.0 && lastDoseTime > 0 && (currentTime - lastDoseTime) > 48 * 3600):
+		stop()
+
 func getEffectName():
 	return "Daily Birth Control"
 

@@ -29,9 +29,10 @@ func processTime(_secondsPassed: int):
 
 	if(character.getMenstrualCycle().getCurrentStage() == CycleStage.Menstruation):
 		timePassed += _secondsPassed
-		while(timePassed >= 3600.0):
-			character.addPain(1)
-			timePassed -= 3600.0
+		if(timePassed >= 3600.0):
+			var painToAdd = floor(timePassed / 3600.0)
+			character.addPain(int(painToAdd))
+			timePassed -= painToAdd * 3600.0
 	else:
 		timePassed = 0.0
 
