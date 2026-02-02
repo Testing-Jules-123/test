@@ -11,6 +11,7 @@ var noticedHeavyIntoPregnancy:bool = false
 var noticedReadyToGiveBirth:bool = false
 var willOvulateAt: float = 0.5
 var ovulationDelaySeconds: float = 0.0
+var ovulationDelayedThisCycle: bool = false
 signal readyToGiveBirthOnce
 signal visiblyPregnant
 signal heavyIntoPregnancy
@@ -106,6 +107,7 @@ func newCycle(shouldClearNonPregEggs:bool = true):
 			eggCells[orificeType] = []
 	willOvulateAt = RNG.randf_range(0.3, 0.6)
 	ovulatedThisCycle = false
+	ovulationDelayedThisCycle = false
 	
 # in seconds
 func getCycleLength() -> int:
@@ -226,11 +228,12 @@ func getOvulationDelayDays() -> float:
 	return ovulationDelaySeconds / (24.0 * 3600.0)
 
 func delayOvulation(seconds: float):
-	if(ovulatedThisCycle || isPregnant()):
+	if(ovulatedThisCycle || isPregnant() || ovulationDelayedThisCycle):
 		return false
 
 	if(RNG.chance(90)):
 		ovulationDelaySeconds += seconds
+		ovulationDelayedThisCycle = true
 		return true
 	return false
 
@@ -401,6 +404,7 @@ func saveData():
 		"noticedReadyToGiveBirth": noticedReadyToGiveBirth,
 		"noticedHeavyIntoPregnancy": noticedHeavyIntoPregnancy,
 		"ovulationDelaySeconds": ovulationDelaySeconds,
+		"ovulationDelayedThisCycle": ovulationDelayedThisCycle,
 	}
 	var eggData = []
 	for orificeType in eggCells:
@@ -420,6 +424,7 @@ func loadData(data):
 	noticedReadyToGiveBirth = SAVE.loadVar(data, "noticedReadyToGiveBirth", false)
 	noticedHeavyIntoPregnancy = SAVE.loadVar(data, "noticedHeavyIntoPregnancy", false)
 	ovulationDelaySeconds = SAVE.loadVar(data, "ovulationDelaySeconds", 0.0)
+	ovulationDelayedThisCycle = SAVE.loadVar(data, "ovulationDelayedThisCycle", false)
 
 	impregnatedEggCells.clear()
 	eggCells.clear()
