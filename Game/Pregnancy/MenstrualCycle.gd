@@ -222,6 +222,9 @@ func forceImpregnateBy(npcID:String):
 		return false
 	return true
 
+func getOvulationDelayDays() -> float:
+	return ovulationDelaySeconds / (24.0 * 3600.0)
+
 func delayOvulation(seconds: float):
 	if(ovulatedThisCycle || isPregnant()):
 		return false

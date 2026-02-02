@@ -42,8 +42,20 @@ func _run():
 		sayn("Intoxication tolerance: "+str(round(GM.pc.getIntoxicationTolerance()*100.0))+"%")
 		var menstrualCycle: MenstrualCycle = GM.pc.getMenstrualCycle()
 		if(menstrualCycle != null && menstrualCycle.hasAnyWomb()):
-			sayn("Menstruation cycle: "+str(CycleStage.getVisibleActionName(menstrualCycle.getCurrentStage())))
+			var stageStr = CycleStage.getVisibleActionName(menstrualCycle.getCurrentStage())
+			if(menstrualCycle.getOvulationDelayDays() > 0.0):
+				stageStr += " (Ovulation delayed for " + str(Util.roundF(menstrualCycle.getOvulationDelayDays(), 1)) + " days)"
+
+			sayn("Menstruation cycle: "+stageStr)
 			sayn("Cycle length: "+str(Util.roundF(menstrualCycle.getCycleLength()/60.0/60.0/24.0, 1))+" days")
+
+			if(GM.pc.hasEffect(StatusEffect.DailyBirthControl)):
+				var effect = GM.pc.getEffect(StatusEffect.DailyBirthControl)
+				if(effect):
+					sayn("Daily birth control: " + str(Util.roundF(effect.getEffectiveness() * 100.0, 1)) + "% effective")
+			if(GM.pc.hasEffect(StatusEffect.IUD)):
+				sayn("IUD: Installed")
+
 			sayn("Visibly pregnant: "+str(menstrualCycle.isVisiblyPregnant()))
 			sayn("Is in heat: "+str(menstrualCycle.isInHeat()))
 			sayn("Estimate chance of becoming pregnant after sex: "+str(Util.roundF(menstrualCycle.getRoughChanceOfBecomingPregnant(), 1))+"%")
